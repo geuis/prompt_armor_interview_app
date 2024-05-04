@@ -2,7 +2,11 @@ import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { PromptArmorContext } from './context';
 
+// This is hardcoded here but really needs to be dynamically retrieved somehow.
+// Unfortunately js on the website can't communicate to the extension without knowing the id in advance.
+// Requires more research.
 const chromeExtensionId = 'jjlkglhbkkfmkhglbddcfdmdnagnpkoc';
+
 const extensionName = 'Prompt Armor Web Tracking';
 const apiServerHost = 'http://localhost';
 const apiServerPort = 3000;
