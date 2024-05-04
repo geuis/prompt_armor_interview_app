@@ -127,8 +127,6 @@ const main = async () => {
 
       // run immediately, then interval will pick up.
       updateTimes();
-
-
     } else {
       console.log('stop tracking');
 
@@ -136,6 +134,11 @@ const main = async () => {
       trackingInterval = null;
 
       // flush to remote
+      const timesObj = await store.get('times');
+
+      if (timesObj) {
+        flush(userId, host, timesObj);
+      }
     }
   } catch (err) {
     console.log(err);
@@ -145,3 +148,11 @@ const main = async () => {
 window.addEventListener('visibilitychange', () => main());
 
 main();
+
+window.addEventListener('message', (ev) => {
+  if (ev.source !== window || ev.data?.source !== 'dashboard_app') {
+    return;
+  }
+
+  window.postMessage({ source: 'webtracking_extension', extensionId: chrome.runtime.id });
+});

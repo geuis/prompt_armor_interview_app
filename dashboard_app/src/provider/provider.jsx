@@ -2,11 +2,6 @@ import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { PromptArmorContext } from './context';
 
-// This is hardcoded here but really needs to be dynamically retrieved somehow.
-// Unfortunately js on the website can't communicate to the extension without knowing the id in advance.
-// Requires more research.
-const chromeExtensionId = 'jjlkglhbkkfmkhglbddcfdmdnagnpkoc';
-
 const extensionName = 'Prompt Armor Web Tracking';
 const apiServerHost = 'http://localhost';
 const apiServerPort = 3000;
@@ -21,19 +16,45 @@ const PromptArmorProvider = ({ children }) => {
   const [selectedTimeInterval, setSelectedTimeInterval] = useState(1);
   const prevSelectedTimeIntervalRef = useRef();
   const [siteTimes, setSiteTimes] = useState();
+  const [chromeExtensionId, setChromeExtensionId] = useState();
 
   const value = {
     actions: {
       setSelectedTimeInterval
     },
-    state: { errorMessage, familyCode, selectedTimeInterval, signedIn, siteTimes, userId, userName }
+    state: { chromeExtensionId, errorMessage, familyCode, selectedTimeInterval, signedIn, siteTimes, userId, userName }
   };
+
+  useEffect(() => {
+    const handleMessage = (ev) => {
+      if (ev.source !== window || ev.data?.source !== 'webtracking_extension') {
+        return;
+      }
+
+      if (ev.data.extensionId) {
+        setChromeExtensionId(ev.data.extensionId);
+      }
+    };
+
+    // request to the extension to get its extension id
+    window.postMessage({ source: 'dashboard_app', message: 'get_extension_id' });
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [chromeExtensionId]);
 
   useEffect(() => {
     try {
       (async () => {
         if (!chrome.runtime) {
           setErrorMessage(`Only Chrome is currently supported and the ${extensionName} extension is required to access this page.`);
+          return false;
+        }
+
+        if (!chromeExtensionId) {
           return false;
         }
 
@@ -67,7 +88,7 @@ const PromptArmorProvider = ({ children }) => {
     } catch (err) {
       throw err;
     }
-  }, [selectedTimeInterval, userId]);
+  }, [selectedTimeInterval, userId, chromeExtensionId]);
 
   return (
     <PromptArmorContext.Provider value={value}>

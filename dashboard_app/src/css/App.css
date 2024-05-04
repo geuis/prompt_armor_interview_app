@@ -54,6 +54,10 @@ body {
     margin-bottom: 8px;
   }
 
+  & .time-filters label {
+    margin-right: 8px;
+  }
+
   & .stats {
     outline: 1px solid #fff;
     display: table;
