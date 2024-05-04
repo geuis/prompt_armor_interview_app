@@ -2,6 +2,9 @@
 
 # install packages
 cd api_server
+rm ./data/database.json
+cp ./data/database_empty.json ./data/database.json
+
 npm install
 
 cd ../dashboard_app

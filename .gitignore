@@ -25,19 +25,11 @@ build/Release
 # Dependency directory
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
-
-jsonip.access.log
-unique_ips_parsed.json
-
-api/geoip_db/asn/
-api/geoip_db/city/
-api/geoip_db/country/
+api_server/data/database.json
 
 .env.*
 
 *.mmdb
-#dist
-.geoipupdate.lock
 .env*
 .flaskenv*
 !.env.project
